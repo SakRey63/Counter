@@ -7,51 +7,46 @@ public class Counter : MonoBehaviour
     [SerializeField] private InputManager _inputManager;
 
     private float _delay = 0.5f;
-    private int _start = 0;
-    private int _numberСounter = 1;
-    private bool _isOpen;
-
-    public int NumberOnDisplay => _start;
-
-    public event Action CountChanged;
+    private int _numberCounter = 0;
+    private Coroutine _counterCoroutine;
+    
+    public event Action<int> CountChanged;
 
     private void OnEnable()
     {
-        _inputManager.GetClicked += CounterManager;
+        _inputManager.Clicked += OnClicked;
     }
 
     private void OnDisable()
     {
-        _inputManager.GetClicked -= CounterManager;
+        _inputManager.Clicked -= OnClicked;
     }
     
     private IEnumerator CounterActivation()
     {
         var wait = new WaitForSecondsRealtime(_delay);
 
-        while (_isOpen)
+        while (true)
         {
-            _start += _numberСounter;
+            _numberCounter ++;
 
-            CountChanged?.Invoke();
+            CountChanged?.Invoke(_numberCounter);
             
             yield return wait; 
         }
     }
 
-    private void CounterManager()
+    private void OnClicked()
     {
-        if (_isOpen == false)
+        if (_counterCoroutine == null)
         {
-            _isOpen = true;
-            
-            StartCoroutine(CounterActivation());
+           _counterCoroutine = StartCoroutine(CounterActivation());
         }
         else
         {
-            _isOpen = false;
+            StopCoroutine(_counterCoroutine);
             
-            StopCoroutine(CounterActivation());
+            _counterCoroutine = null;
         }
     }
 }

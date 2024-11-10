@@ -23,8 +23,8 @@ public class DisplayCounter : MonoBehaviour
         _text.text = _textInstruction;
     }
     
-    private void ChangeNumber()
+    private void ChangeNumber(int number)
     {
-        _text.text = _counter.NumberOnDisplay.ToString();
+        _text.text = number.ToString();
     }
 }
