@@ -1,17 +1,19 @@
+using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
     [SerializeField] private InputManager _inputManager;
-    [SerializeField] private TextMeshProUGUI _text;
 
     private float _delay = 0.5f;
     private int _start = 0;
     private int _numberСounter = 1;
     private bool _isOpen;
-    private string _textInstruction = "Нажмите левую клавишу мышы для включения счетчика.";
+
+    public int NumberOnDisplay => _start;
+
+    public event Action CountChanged;
 
     private void OnEnable()
     {
@@ -22,11 +24,6 @@ public class Counter : MonoBehaviour
     {
         _inputManager.GetClicked -= CounterManager;
     }
-
-    private void Start()
-    {
-        _text.text = _textInstruction;
-    }
     
     private IEnumerator CounterActivation()
     {
@@ -35,8 +32,8 @@ public class Counter : MonoBehaviour
         while (_isOpen)
         {
             _start += _numberСounter;
-            
-            DisplayCounter(_start);
+
+            CountChanged?.Invoke();
             
             yield return wait; 
         }
@@ -56,10 +53,5 @@ public class Counter : MonoBehaviour
             
             StopCoroutine(CounterActivation());
         }
-    }
-
-    private void DisplayCounter(int counter)
-    {
-        _text.text = counter.ToString();
     }
 }
